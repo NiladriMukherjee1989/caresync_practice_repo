@@ -5,6 +5,8 @@
 			{
 				"name": "Copy data1",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -56,8 +58,42 @@
 						}
 					}
 				]
+			},
+			{
+				"name": "Lookup source metadata",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 2,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "select table_id from ctrl.table_config\nwhere is_active=1 and source_system ='@{pipeline().parameters.source_system}'",
+							"type": "Expression"
+						},
+						"queryTimeout": "01:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DS_AzuresqlDatabase",
+						"type": "DatasetReference"
+					}
+				}
 			}
 		],
+		"parameters": {
+			"source_system": {
+				"type": "string",
+				"defaultValue": "default"
+			}
+		},
 		"annotations": []
 	}
 }
