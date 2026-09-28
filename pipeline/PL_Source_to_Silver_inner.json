@@ -113,7 +113,7 @@
 						"parameters": {
 							"container": "landing",
 							"folder": {
-								"value": "concat(activity('Lookup_single_table').output.firstRow.soure_system, '/',activity('Lookup_single_table').output.firstRow.source_table_name,'/',variables('start_TS'))",
+								"value": "@concat(activity('Lookup_single_table').output.firstRow.source_system, '/',activity('Lookup_single_table').output.firstRow.source_table_name,'/',variables('start_TS'))",
 								"type": "Expression"
 							}
 						}
