@@ -1,0 +1,15 @@
+{
+	"name": "CareSync-data-factory",
+	"properties": {
+		"trustModeClaimForMi": {
+			"value": "Disabled",
+			"editable": true
+		}
+	},
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "0f824e85-12d6-4f42-a93d-08d43173567b",
+		"tenantId": "7d84783f-94b5-4214-b107-914936a0df81"
+	}
+}
