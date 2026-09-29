@@ -119,6 +119,84 @@
 						}
 					}
 				]
+			},
+			{
+				"name": "SOURCE_TO_BRONZE",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "Ingest actual data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/caresync/caresync_practice_repo_databricks/SOURCE_TO_BRONZE",
+					"baseParameters": {
+						"source_system": {
+							"value": "@activity('Lookup_single_table').output.firstRow.source_system",
+							"type": "Expression"
+						},
+						"table_name": {
+							"value": "@activity('Lookup_single_table').output.firstRow.source_table_name",
+							"type": "Expression"
+						},
+						"ingested_ts": {
+							"value": "@variables('start_TS')",
+							"type": "Expression"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "AzureDatabricks1",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "BRONZE_TO_SILVER",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "SOURCE_TO_BRONZE",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/caresync/caresync_practice_repo_databricks/BRONZE_TO_SILVER",
+					"baseParameters": {
+						"table_name": {
+							"value": "@activity('Lookup_single_table').output.firstRow.table_name",
+							"type": "Expression"
+						},
+						"ingested_ts": {
+							"value": "@variables('start_TS')",
+							"type": "Expression"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "AzureDatabricks1",
+					"type": "LinkedServiceReference"
+				}
 			}
 		],
 		"parameters": {
