@@ -184,7 +184,7 @@
 					"notebookPath": "/caresync/caresync_practice_repo_databricks/BRONZE_TO_SILVER",
 					"baseParameters": {
 						"table_name": {
-							"value": "@activity('Lookup_single_table').output.firstRow.table_name",
+							"value": "@activity('Lookup_single_table').output.firstRow.source_table_name",
 							"type": "Expression"
 						},
 						"ingested_ts": {
