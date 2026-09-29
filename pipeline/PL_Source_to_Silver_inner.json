@@ -76,7 +76,7 @@
 					"source": {
 						"type": "PostgreSqlV2Source",
 						"query": {
-							"value": "@select * from public.@{activity('Lookup_single_table').output.firstRow.source_table_name}",
+							"value": "select * from public.@{activity('Lookup_single_table').output.firstRow.source_table_name}",
 							"type": "Expression"
 						},
 						"queryTimeout": "02:00:00"
