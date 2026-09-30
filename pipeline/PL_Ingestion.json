@@ -32,7 +32,7 @@
 				}
 			},
 			{
-				"name": "Read all tables",
+				"name": "Calling Inner Pipeline",
 				"type": "ForEach",
 				"dependsOn": [
 					{
@@ -135,9 +135,14 @@
 							"typeProperties": {
 								"scripts": [
 									{
+										"parameters": [
+											{
+												"value": ""
+											}
+										],
 										"type": "Query",
 										"text": {
-											"value": "update ctrl.audit_log  set STATUS='FAILED',END_TIME=SYSUTCDATETIME()\nWHERE  adf_run_id='run1' and table_id=@{item().table_id} and status='IN_PROGRESS';",
+											"value": "update ctrl.audit_log  set STATUS='FAILED',END_TIME=SYSUTCDATETIME()\nWHERE  adf_run_id='@{pipeline().parameters.adf_run_id}' and table_id=@{item().table_id} and status='IN_PROGRESS';",
 											"type": "Expression"
 										}
 									}
@@ -153,6 +158,10 @@
 			"source_system": {
 				"type": "string",
 				"defaultValue": "neon_postgres"
+			},
+			"adf_run_id": {
+				"type": "string",
+				"defaultValue": "run1"
 			}
 		},
 		"variables": {

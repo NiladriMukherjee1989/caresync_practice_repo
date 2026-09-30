@@ -226,7 +226,7 @@
 						{
 							"type": "Query",
 							"text": {
-								"value": "update ctrl.audit_log  set STATUS='FAILED',END_TIME=SYSUTCDATETIME()\nWHERE  adf_run_id='run1' and table_id=@{item().table_id} and status='IN_PROGRESS';",
+								"value": "pipeline().parameters.table_idupdate ctrl.audit_log  set STATUS='FAILED',END_TIME=SYSUTCDATETIME()\nWHERE  adf_run_id='@{pipeline().parameters.adf_run_id}' and table_id=@{pipeline().parameters.table_id} and status='IN_PROGRESS';",
 								"type": "Expression"
 							}
 						}
@@ -239,6 +239,10 @@
 			"table_id": {
 				"type": "string",
 				"defaultValue": "1"
+			},
+			"adf_run_id": {
+				"type": "string",
+				"defaultValue": "a1"
 			}
 		},
 		"variables": {
