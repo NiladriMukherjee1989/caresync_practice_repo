@@ -201,6 +201,8 @@
 			{
 				"name": "Update Audit table Success",
 				"type": "Script",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "BRONZE_TO_SILVER",
@@ -233,6 +235,54 @@
 					],
 					"scriptBlockExecutionTimeout": "02:00:00"
 				}
+			},
+			{
+				"name": "Set variable",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "BRONZE_TO_SILVER",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "run_id",
+					"value": {
+						"value": "@pipeline().parameters.adf_run_id",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set variable_copy1",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "BRONZE_TO_SILVER",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "table_id",
+					"value": {
+						"value": "@pipeline().parameters.table_id",
+						"type": "Expression"
+					}
+				}
 			}
 		],
 		"parameters": {
@@ -241,12 +291,17 @@
 				"defaultValue": "1"
 			},
 			"adf_run_id": {
-				"type": "string",
-				"defaultValue": "a1"
+				"type": "string"
 			}
 		},
 		"variables": {
 			"start_TS": {
+				"type": "String"
+			},
+			"run_id": {
+				"type": "String"
+			},
+			"table_id": {
 				"type": "String"
 			}
 		},
