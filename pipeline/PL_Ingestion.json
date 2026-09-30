@@ -48,6 +48,7 @@
 						"value": "@activity('Lookup source metadata').output.value",
 						"type": "Expression"
 					},
+					"isSequential": false,
 					"batchCount": 2,
 					"activities": [
 						{
@@ -66,7 +67,7 @@
 								"waitOnCompletion": true,
 								"parameters": {
 									"table_id": {
-										"value": "@item().value",
+										"value": "@item().table_id",
 										"type": "Expression"
 									}
 								}
