@@ -129,6 +129,10 @@
 											"table_id": {
 												"value": "@item().table_id",
 												"type": "Expression"
+											},
+											"adf_run_id": {
+												"value": "@pipeline().parameters.adf_run_id",
+												"type": "Expression"
 											}
 										}
 									}
@@ -154,7 +158,7 @@
 											{
 												"type": "Query",
 												"text": {
-													"value": "INSERT into ctrl.audit_log (adf_run_id, table_id, stage, status, start_time)\nVALUES\n('run1',@{item().table_id},'SOURCE_TO_SILVER','IN_PROGRESS',SYSUTCDATETIME());",
+													"value": "INSERT into ctrl.audit_log (adf_run_id, table_id, stage, status, start_time)\nVALUES\n('@{pipeline().parameters.adf_run_id}',@{item().table_id},'SOURCE_TO_SILVER','IN_PROGRESS',SYSUTCDATETIME());",
 													"type": "Expression"
 												}
 											}
@@ -285,13 +289,7 @@
 						"type": "Copy",
 						"dependsOn": [
 							{
-								"activity": "Set Start_TS",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							},
-							{
-								"activity": "Lookup_single_table",
+								"activity": "Check Load Type",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -309,7 +307,7 @@
 							"source": {
 								"type": "PostgreSqlV2Source",
 								"query": {
-									"value": "select * from public.@{activity('Lookup_single_table').output.firstRow.source_table_name}",
+									"value": "select * from public.@{activity('Lookup_single_table').output.firstRow.source_table_name}\n\n@{\n    if(\n        equals(activity('Lookup_single_table').output.firstRow.load_type,'FULL') , '',concat('where ',activity('Lookup_single_table').output.firstRow.watermark_column,' >','''',variables('watermark_value'),'''')\n    \n       )\n}",
 									"type": "Expression"
 								},
 								"queryTimeout": "02:00:00"
@@ -467,6 +465,139 @@
 							],
 							"scriptBlockExecutionTimeout": "02:00:00"
 						}
+					},
+					{
+						"name": "Check Load Type",
+						"description": "Whether it is FULL load or INCREMENTAL load",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "Lookup_single_table",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Set Start_TS",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@not(equals(activity('Lookup_single_table').output.firstRow.load_type,'FULL'))",
+								"type": "Expression"
+							},
+							"ifTrueActivities": [
+								{
+									"name": "Read watermark",
+									"description": "Will return something like \n1900-01-01T00:00:00\n",
+									"type": "Lookup",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "AzureSqlSource",
+											"sqlReaderQuery": {
+												"value": "select watermark_value from ctrl.watermark where table_id=@{pipeline().parameters.table_id}",
+												"type": "Expression"
+											},
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
+										},
+										"dataset": {
+											"referenceName": "DS_AzuresqlDatabase",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									}
+								},
+								{
+									"name": "Store watermark_value to a variable",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "Read watermark",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "watermark_value",
+										"value": {
+											"value": "@activity('Read watermark').output.watermark_value",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "Check Load Type_copy1",
+						"description": "Whether it is FULL load or INCREMENTAL load",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "BRONZE_TO_SILVER",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@not(equals(activity('Lookup_single_table').output.firstRow.load_type,'FULL'))",
+								"type": "Expression"
+							},
+							"ifTrueActivities": [
+								{
+									"name": "Update Watermaerk Table with latest TS",
+									"type": "Script",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 2,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"linkedServiceName": {
+										"referenceName": "LS_AzureSqlDatabase",
+										"type": "LinkedServiceReference"
+									},
+									"typeProperties": {
+										"scripts": [
+											{
+												"type": "Query",
+												"text": {
+													"value": "update ctrl.watermark set watermark_value =SYSUTCDATETIME() where table_id=@{pipeline().parameters.table_id}",
+													"type": "Expression"
+												}
+											}
+										],
+										"scriptBlockExecutionTimeout": "02:00:00"
+									}
+								}
+							]
+						}
 					}
 				],
 				"policy": {
@@ -479,11 +610,23 @@
 					},
 					"adf_run_id": {
 						"type": "string",
-						"defaultValue": "a1"
+						"defaultValue": "inner_default_parameter"
 					}
 				},
 				"variables": {
 					"start_TS": {
+						"type": "String"
+					},
+					"run_id": {
+						"type": "String"
+					},
+					"table_id": {
+						"type": "String"
+					},
+					"table_id_1": {
+						"type": "Integer"
+					},
+					"watermark_value": {
 						"type": "String"
 					}
 				},
