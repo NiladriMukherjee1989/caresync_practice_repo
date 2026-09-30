@@ -8,11 +8,11 @@
 		"parameters": {
 			"container": {
 				"type": "string",
-				"defaultValue": "source folder"
+				"defaultValue": "default"
 			},
 			"folder": {
 				"type": "string",
-				"defaultValue": "folder_name"
+				"defaultValue": "default"
 			}
 		},
 		"annotations": [],
