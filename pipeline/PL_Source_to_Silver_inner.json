@@ -201,8 +201,6 @@
 			{
 				"name": "Update Audit table Success",
 				"type": "Script",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "BRONZE_TO_SILVER",
@@ -239,6 +237,8 @@
 			{
 				"name": "Set variable",
 				"type": "SetVariable",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "BRONZE_TO_SILVER",
@@ -263,6 +263,8 @@
 			{
 				"name": "Set variable_copy1",
 				"type": "SetVariable",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "BRONZE_TO_SILVER",
