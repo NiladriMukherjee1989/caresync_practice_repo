@@ -279,7 +279,7 @@
 				"typeProperties": {
 					"variableName": "table_id",
 					"value": {
-						"value": "@pipeline().parameters.table_id",
+						"value": "@string(pipeline().parameters.table_id)",
 						"type": "Expression"
 					}
 				}
@@ -291,7 +291,8 @@
 				"defaultValue": "1"
 			},
 			"adf_run_id": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "default_value"
 			}
 		},
 		"variables": {
@@ -303,6 +304,9 @@
 			},
 			"table_id": {
 				"type": "String"
+			},
+			"table_id_1": {
+				"type": "Integer"
 			}
 		},
 		"annotations": []
