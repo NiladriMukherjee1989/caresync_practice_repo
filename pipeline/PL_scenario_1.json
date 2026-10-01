@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Get Metadata1",
+				"name": "Get Metadata Outer",
 				"type": "GetMetadata",
 				"dependsOn": [],
 				"policy": {
@@ -44,7 +44,7 @@
 				"type": "ForEach",
 				"dependsOn": [
 					{
-						"activity": "Get Metadata1",
+						"activity": "Get Metadata Outer",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -53,13 +53,13 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('Get Metadata1').output.childItems",
+						"value": "@activity('Get Metadata Outer').output.childItems",
 						"type": "Expression"
 					},
 					"batchCount": 2,
 					"activities": [
 						{
-							"name": "Get Last Modified TS",
+							"name": "Get Metadata Inner",
 							"type": "GetMetadata",
 							"dependsOn": [],
 							"policy": {
@@ -96,27 +96,58 @@
 							}
 						},
 						{
-							"name": "Set variable1",
-							"type": "SetVariable",
+							"name": "If Condition1",
+							"type": "IfCondition",
 							"dependsOn": [
 								{
-									"activity": "Get Last Modified TS",
+									"activity": "Get Metadata Inner",
 									"dependencyConditions": [
 										"Succeeded"
 									]
 								}
 							],
-							"policy": {
-								"secureOutput": false,
-								"secureInput": false
-							},
 							"userProperties": [],
 							"typeProperties": {
-								"variableName": "last_recorded_ts",
-								"value": {
-									"value": "@activity('Get Last Modified TS').output.lastModified",
+								"expression": {
+									"value": "@greater(activity('Get Metadata Inner').output.lastModified,variables('highest_watermark_ts'))",
 									"type": "Expression"
-								}
+								},
+								"ifTrueActivities": [
+									{
+										"name": "Set var highest TS",
+										"type": "SetVariable",
+										"dependsOn": [],
+										"policy": {
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"variableName": "highest_watermark_ts",
+											"value": {
+												"value": "@activity('Get Metadata Inner').output.lastModified",
+												"type": "Expression"
+											}
+										}
+									},
+									{
+										"name": "Set var filename",
+										"type": "SetVariable",
+										"dependsOn": [],
+										"policy": {
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"variableName": "latest_filename",
+											"value": {
+												"value": "@item().name",
+												"type": "Expression"
+											}
+										}
+									}
+								]
 							}
 						}
 					]
@@ -124,13 +155,12 @@
 			}
 		],
 		"variables": {
-			"last_recorded_ts": {
-				"type": "String",
-				"defaultValue": "2020-10-01T19:11:32Z"
-			},
 			"highest_watermark_ts": {
 				"type": "String",
 				"defaultValue": "2020-10-01T19:11:32Z"
+			},
+			"latest_filename": {
+				"type": "String"
 			}
 		},
 		"annotations": []
