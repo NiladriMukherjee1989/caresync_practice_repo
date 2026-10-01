@@ -1,0 +1,217 @@
+{
+	"name": "pipeline1",
+	"properties": {
+		"activities": [
+			{
+				"name": "Set body_header",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "body_header",
+					"value": "Please see below status of your pipeline run"
+				}
+			},
+			{
+				"name": "Set body_footer",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "body_footer",
+					"value": "End of email\n\nThanks\nNiladri Mukherjee\nADF"
+				}
+			},
+			{
+				"name": "Lookup Run table",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "select * from ctrl.audit_log where adf_run_id='@{pipeline().parameters.adf_run_id}';",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DS_AzuresqlDatabase",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "Lookup failure count",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "select count(*) as c from ctrl.audit_log where adf_run_id='@{pipeline().parameters.adf_run_id}' and status !='SUCCESS'",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DS_AzuresqlDatabase",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": true
+				}
+			},
+			{
+				"name": "Set subject",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Lookup failure count",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "email_subject",
+					"value": {
+						"value": "@{pipeline().globalParameters.environment} | @{if(greater(activity('Lookup failure count').output.firstRow.c,0),'FAILED','SUCCESS')} | @{pipeline().parameters.adf_run_id}",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Draft email JSON",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Set body_header",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Set subject",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Set body_footer",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Lookup Run table",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "json_payload",
+					"value": {
+						"value": "{\n  \"to\": \"@{pipeline().globalParameters.email_recipient}\",\n  \"subject\": \"@{variables('email_subject')}\",\n  \"body\": \"@{variables('body_header')}\"\" | @{activity('Lookup Run table').output.value} | \"@{variables('body_footer')}\"\n}",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Web-Logic app",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "Draft email JSON",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"method": "POST",
+					"headers": {
+						"Content-Type": "application/json"
+					},
+					"url": {
+						"value": "@pipeline().globalParameters.logic_apps_URL",
+						"type": "Expression"
+					},
+					"body": {
+						"value": "@variables('json_payload')",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"adf_run_id": {
+				"type": "string",
+				"defaultValue": "run_1"
+			}
+		},
+		"variables": {
+			"body_header": {
+				"type": "String"
+			},
+			"body_footer": {
+				"type": "String"
+			},
+			"body_table": {
+				"type": "String"
+			},
+			"email_subject": {
+				"type": "String"
+			},
+			"json_payload": {
+				"type": "String"
+			}
+		},
+		"annotations": []
+	}
+}
