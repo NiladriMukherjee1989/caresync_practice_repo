@@ -48,10 +48,14 @@
 				],
 				"userProperties": [],
 				"typeProperties": {
+					"items": {
+						"value": "@activity('Get Metadata1').output.childItems",
+						"type": "Expression"
+					},
 					"batchCount": 2,
 					"activities": [
 						{
-							"name": "Get Metadata2",
+							"name": "Get Last Modified TS",
 							"type": "GetMetadata",
 							"dependsOn": [],
 							"policy": {
