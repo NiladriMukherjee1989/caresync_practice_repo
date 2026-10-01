@@ -5,6 +5,10 @@
 			"email_recipient": {
 				"type": "string",
 				"value": "nilu_1989_01@yahoo.co.in"
+			},
+			"environment": {
+				"type": "string",
+				"value": "DEV"
 			}
 		},
 		"trustModeClaimForMi": {
