@@ -78,7 +78,7 @@
 										"container": "source",
 										"folder": "raw",
 										"file": {
-											"value": "@item().value",
+											"value": "@item().name",
 											"type": "Expression"
 										}
 									}
