@@ -20,7 +20,11 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"container": "source",
-							"folder": "raw"
+							"folder": "raw",
+							"file": {
+								"value": "@string('')",
+								"type": "Expression"
+							}
 						}
 					},
 					"fieldList": [
