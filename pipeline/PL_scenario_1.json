@@ -42,8 +42,6 @@
 			{
 				"name": "ForEach1",
 				"type": "ForEach",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "Get Metadata1",
@@ -78,7 +76,11 @@
 									"type": "DatasetReference",
 									"parameters": {
 										"container": "source",
-										"folder": "raw"
+										"folder": "raw",
+										"file": {
+											"value": "@item().value",
+											"type": "Expression"
+										}
 									}
 								},
 								"fieldList": [
