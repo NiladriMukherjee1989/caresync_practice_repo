@@ -1,6 +1,12 @@
 {
 	"name": "CareSync-data-factory",
 	"properties": {
+		"globalParameters": {
+			"email_recipient": {
+				"type": "string",
+				"value": "nilu_1989_01@yahoo.co.in"
+			}
+		},
 		"trustModeClaimForMi": {
 			"value": "Disabled",
 			"editable": true
