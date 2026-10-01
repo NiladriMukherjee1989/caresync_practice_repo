@@ -94,11 +94,45 @@
 									"type": "DelimitedTextReadSettings"
 								}
 							}
+						},
+						{
+							"name": "Set variable1",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "Get Last Modified TS",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "last_recorded_ts",
+								"value": {
+									"value": "@activity('Get Last Modified TS').output.lastModified",
+									"type": "Expression"
+								}
+							}
 						}
 					]
 				}
 			}
 		],
+		"variables": {
+			"last_recorded_ts": {
+				"type": "String",
+				"defaultValue": "2020-10-01T19:11:32Z"
+			},
+			"highest_watermark_ts": {
+				"type": "String",
+				"defaultValue": "2020-10-01T19:11:32Z"
+			}
+		},
 		"annotations": []
 	}
 }
