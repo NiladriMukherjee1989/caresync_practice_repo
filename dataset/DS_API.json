@@ -1,0 +1,35 @@
+{
+	"name": "DS_API",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_API",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"folder": {
+				"type": "string",
+				"defaultValue": "NiladriMukherjee1989/ADF_practice_files/refs/heads/main/RawData/"
+			},
+			"file": {
+				"type": "string",
+				"defaultValue": "AdventureWorks_Territories.csv"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": {
+					"value": "@concat(dataset().folder,dataset().file)",
+					"type": "Expression"
+				}
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
