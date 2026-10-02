@@ -32,6 +32,9 @@
 		"LS_POSTGRES_properties_typeProperties_username": {
 			"value": "neondb_owner"
 		},
+		"LS_API_properties_typeProperties_url": {
+			"value": "https://raw.githubusercontent.com/"
+		},
 		"containerUri": {
 			"value": ""
 		},
