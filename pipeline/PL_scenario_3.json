@@ -1,0 +1,49 @@
+{
+	"name": "PL_scenario_3",
+	"properties": {
+		"activities": [
+			{
+				"name": "Get Source",
+				"type": "GetMetadata",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "DS_CSV",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "source",
+							"folder": "lab_results",
+							"file": {
+								"value": "@string('')",
+								"type": "Expression"
+							}
+						}
+					},
+					"fieldList": [
+						"childItems"
+					],
+					"storeSettings": {
+						"type": "AzureBlobFSReadSettings",
+						"modifiedDatetimeEnd": {
+							"value": "@addDays(utcNow(),-1)",
+							"type": "Expression"
+						},
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "DelimitedTextReadSettings"
+					}
+				}
+			}
+		],
+		"annotations": []
+	}
+}
