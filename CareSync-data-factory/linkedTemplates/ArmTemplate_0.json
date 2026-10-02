@@ -75,18 +75,6 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/DS_ADLS')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -959,6 +947,212 @@
 								}
 							]
 						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DS_CSV')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/PL_scenario_5')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "lab_result_id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "lab_result_id",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "patient_id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "patient_id",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "hospital_id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "hospital_id",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "doctor_id",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "doctor_id",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "test_name",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "test_name",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "test_date",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "test_date",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "result_value",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "result_value",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "result_unit",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "result_unit",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "result_status",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "result_status",
+											"type": "String",
+											"physicalType": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "reported_at",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "reported_at",
+											"type": "String",
+											"physicalType": "String"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "DS_CSV",
+								"type": "DatasetReference",
+								"parameters": {
+									"container": "source",
+									"folder": "lab_results",
+									"file": "lab_results_2026_09_14_1329.csv"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "DS_CSV",
+								"type": "DatasetReference",
+								"parameters": {
+									"container": "destination",
+									"folder": "raw",
+									"file": "lab_results_2026_09_14_1329.csv"
+								}
+							}
+						]
 					}
 				],
 				"policy": {
