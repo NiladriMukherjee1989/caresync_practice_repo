@@ -1,1 +1,14 @@
-{}
+{
+	"email_recipient": {
+		"type": "string",
+		"value": "nilu_1989_01@yahoo.co.in"
+	},
+	"environment": {
+		"type": "string",
+		"value": "DEV"
+	},
+	"logic_apps_URL": {
+		"type": "string",
+		"value": "https://prod-04.northcentralus.logic.azure.com:443/workflows/341a37db00a04da8bf17400d1ae9f540/triggers/When_an_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_an_HTTP_request_is_received%2Frun&sv=1.0&sig=8O00Zx_de8CBvTHYEKWRweA-gj_3fzLZztlj-5AznNg"
+	}
+}
