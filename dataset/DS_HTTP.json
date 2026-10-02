@@ -8,7 +8,7 @@
 		"parameters": {
 			"folder_path": {
 				"type": "string",
-				"defaultValue": "/Walmart_Airflow_DBT_Project/refs/heads/main/walmart_dataset/"
+				"defaultValue": "NiladriMukherjee1989/Walmart_Airflow_DBT_Project/refs/heads/main/walmart_dataset/data/"
 			},
 			"file_name": {
 				"type": "string",
@@ -26,6 +26,7 @@
 				}
 			},
 			"columnDelimiter": ",",
+			"rowDelimiter": "\n",
 			"escapeChar": "\\",
 			"firstRowAsHeader": true,
 			"quoteChar": "\""
