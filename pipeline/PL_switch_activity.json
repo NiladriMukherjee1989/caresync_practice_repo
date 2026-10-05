@@ -60,12 +60,12 @@
 							"userProperties": [],
 							"typeProperties": {
 								"on": {
-									"value": "@{contains(item().name,'csv')}",
+									"value": "@{last(split(item().name,'.'))}",
 									"type": "Expression"
 								},
 								"cases": [
 									{
-										"value": "csv_case",
+										"value": "csv",
 										"activities": [
 											{
 												"name": "Copy data1",
@@ -132,7 +132,7 @@
 														"type": "DatasetReference",
 														"parameters": {
 															"container": "destination",
-															"folder": "swicth_output",
+															"folder": "csv_files",
 															"file": {
 																"value": "@item().name",
 																"type": "Expression"
@@ -142,6 +142,9 @@
 												]
 											}
 										]
+									},
+									{
+										"value": "Case2"
 									}
 								]
 							}
