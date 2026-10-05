@@ -189,7 +189,7 @@
 												"referenceName": "DS_CSV",
 												"type": "DatasetReference",
 												"parameters": {
-													"container": "sourcre",
+													"container": "source",
 													"folder": "raw",
 													"file": {
 														"value": "@item().name",
