@@ -68,11 +68,38 @@
 						}
 					]
 				}
+			},
+			{
+				"name": "Set variable1",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "ForEach1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "file_count",
+					"value": {
+						"value": "@length(variables('file_names'))",
+						"type": "Expression"
+					}
+				}
 			}
 		],
 		"variables": {
 			"file_names": {
 				"type": "Array"
+			},
+			"file_count": {
+				"type": "Integer"
 			}
 		},
 		"annotations": []
