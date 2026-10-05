@@ -153,14 +153,14 @@
 										"userProperties": [],
 										"typeProperties": {
 											"source": {
-												"type": "ParquetSource",
+												"type": "DelimitedTextSource",
 												"storeSettings": {
 													"type": "AzureBlobFSReadSettings",
 													"recursive": true,
 													"enablePartitionDiscovery": false
 												},
 												"formatSettings": {
-													"type": "ParquetReadSettings"
+													"type": "DelimitedTextReadSettings"
 												}
 											},
 											"sink": {
@@ -186,11 +186,15 @@
 										},
 										"inputs": [
 											{
-												"referenceName": "DS_ADLS",
+												"referenceName": "DS_CSV",
 												"type": "DatasetReference",
 												"parameters": {
-													"container": "destination",
-													"folder": "matching_copy"
+													"container": "sourcre",
+													"folder": "raw",
+													"file": {
+														"value": "@item().name",
+														"type": "Expression"
+													}
 												}
 											}
 										],
