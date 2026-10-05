@@ -15,6 +15,10 @@
 			"type": "string",
 			"defaultValue": "https://storagecaresync.dfs.core.windows.net/"
 		},
+		"LS_API_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://raw.githubusercontent.com/"
+		},
 		"LS_AzureSqlDatabase_properties_typeProperties_server": {
 			"type": "string",
 			"defaultValue": "sql-server-practice-niladri.database.windows.net"
@@ -26,6 +30,10 @@
 		"LS_AzureSqlDatabase_properties_typeProperties_userName": {
 			"type": "string",
 			"defaultValue": "niladri_mukherjee"
+		},
+		"LS_HTTP_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://raw.githubusercontent.com/"
 		},
 		"LS_Key_Vault_properties_typeProperties_baseUrl": {
 			"type": "string",
@@ -42,14 +50,6 @@
 		"LS_POSTGRES_properties_typeProperties_username": {
 			"type": "string",
 			"defaultValue": "neondb_owner"
-		},
-		"LS_API_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://raw.githubusercontent.com/"
-		},
-		"LS_HTTP_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://raw.githubusercontent.com/"
 		},
 		"containerUri": {
 			"type": "string",
@@ -81,14 +81,14 @@
 					"LS_ADLS_properties_typeProperties_url": {
 						"value": "[parameters('LS_ADLS_properties_typeProperties_url')]"
 					},
-					"LS_Key_Vault_properties_typeProperties_baseUrl": {
-						"value": "[parameters('LS_Key_Vault_properties_typeProperties_baseUrl')]"
-					},
 					"LS_API_properties_typeProperties_url": {
 						"value": "[parameters('LS_API_properties_typeProperties_url')]"
 					},
 					"LS_HTTP_properties_typeProperties_url": {
 						"value": "[parameters('LS_HTTP_properties_typeProperties_url')]"
+					},
+					"LS_Key_Vault_properties_typeProperties_baseUrl": {
+						"value": "[parameters('LS_Key_Vault_properties_typeProperties_baseUrl')]"
 					},
 					"AzureDatabricks1_properties_typeProperties_existingClusterId": {
 						"value": "[parameters('AzureDatabricks1_properties_typeProperties_existingClusterId')]"

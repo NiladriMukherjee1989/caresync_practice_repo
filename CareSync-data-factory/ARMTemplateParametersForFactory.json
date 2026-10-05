@@ -11,6 +11,9 @@
 		"LS_ADLS_properties_typeProperties_url": {
 			"value": "https://storagecaresync.dfs.core.windows.net/"
 		},
+		"LS_API_properties_typeProperties_url": {
+			"value": "https://raw.githubusercontent.com/"
+		},
 		"LS_AzureSqlDatabase_properties_typeProperties_server": {
 			"value": "sql-server-practice-niladri.database.windows.net"
 		},
@@ -19,6 +22,9 @@
 		},
 		"LS_AzureSqlDatabase_properties_typeProperties_userName": {
 			"value": "niladri_mukherjee"
+		},
+		"LS_HTTP_properties_typeProperties_url": {
+			"value": "https://raw.githubusercontent.com/"
 		},
 		"LS_Key_Vault_properties_typeProperties_baseUrl": {
 			"value": "https://vault-caresync.vault.azure.net/"
@@ -31,12 +37,6 @@
 		},
 		"LS_POSTGRES_properties_typeProperties_username": {
 			"value": "neondb_owner"
-		},
-		"LS_API_properties_typeProperties_url": {
-			"value": "https://raw.githubusercontent.com/"
-		},
-		"LS_HTTP_properties_typeProperties_url": {
-			"value": "https://raw.githubusercontent.com/"
 		}
 	}
 }
