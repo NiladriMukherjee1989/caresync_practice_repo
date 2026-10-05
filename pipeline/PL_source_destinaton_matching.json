@@ -124,7 +124,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('Get destination').output.childItems",
+						"value": "@activity('Get source').output.childItems",
 						"type": "Expression"
 					},
 					"activities": [
