@@ -3,6 +3,73 @@
 	"properties": {
 		"activities": [
 			{
+				"name": "Get destination",
+				"type": "GetMetadata",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "DS_ADLS",
+						"type": "DatasetReference",
+						"parameters": {
+							"container": "destination",
+							"folder": "matching_copy"
+						}
+					},
+					"fieldList": [
+						"childItems"
+					],
+					"storeSettings": {
+						"type": "AzureBlobFSReadSettings",
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "ParquetReadSettings"
+					}
+				}
+			},
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Get destination",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Get destination').output.childItems",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Append variable1",
+							"type": "AppendVariable",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "destination_array",
+								"value": {
+									"value": "@item().name",
+									"type": "Expression"
+								}
+							}
+						}
+					]
+				}
+			},
+			{
 				"name": "Get source",
 				"type": "GetMetadata",
 				"dependsOn": [],
@@ -36,11 +103,17 @@
 				}
 			},
 			{
-				"name": "ForEach1",
+				"name": "ForEach2",
 				"type": "ForEach",
 				"dependsOn": [
 					{
 						"activity": "Get source",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "ForEach1",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -49,14 +122,33 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('Get source').output.childItems",
+						"value": "@activity('Get destination').output.childItems",
 						"type": "Expression"
 					},
 					"activities": [
 						{
-							"name": "Get destination",
-							"type": "GetMetadata",
+							"name": "If Condition1",
+							"type": "IfCondition",
 							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"expression": {
+									"value": "@not(contains(variables('destination_array'),item().name))",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "Copy data1",
+							"type": "Copy",
+							"dependsOn": [
+								{
+									"activity": "If Condition1",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
 							"policy": {
 								"timeout": "0.12:00:00",
 								"retry": 0,
@@ -66,53 +158,76 @@
 							},
 							"userProperties": [],
 							"typeProperties": {
-								"dataset": {
-									"referenceName": "DS_ADLS",
+								"source": {
+									"type": "DelimitedTextSource",
+									"storeSettings": {
+										"type": "AzureBlobFSReadSettings",
+										"recursive": true,
+										"enablePartitionDiscovery": false
+									},
+									"formatSettings": {
+										"type": "DelimitedTextReadSettings"
+									}
+								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": ".txt"
+									}
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "DS_CSV",
+									"type": "DatasetReference",
+									"parameters": {
+										"container": "source",
+										"folder": "raw",
+										"file": {
+											"value": "@item().name",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "DS_CSV",
 									"type": "DatasetReference",
 									"parameters": {
 										"container": "destination",
-										"folder": "csv_files"
+										"folder": "matching_copy",
+										"file": {
+											"value": "@item().name",
+											"type": "Expression"
+										}
 									}
-								},
-								"fieldList": [
-									"childItems"
-								],
-								"storeSettings": {
-									"type": "AzureBlobFSReadSettings",
-									"enablePartitionDiscovery": false
-								},
-								"formatSettings": {
-									"type": "ParquetReadSettings"
 								}
-							}
-						},
-						{
-							"name": "Filter1",
-							"type": "Filter",
-							"dependsOn": [
-								{
-									"activity": "Get destination",
-									"dependencyConditions": [
-										"Succeeded"
-									]
-								}
-							],
-							"userProperties": [],
-							"typeProperties": {
-								"items": {
-									"value": "@activity('Get destination').output.childItems",
-									"type": "Expression"
-								},
-								"condition": {
-									"value": "@not(contains(activity('Get destination').output.childItems,item().name ))",
-									"type": "Expression"
-								}
-							}
+							]
 						}
 					]
 				}
 			}
 		],
+		"variables": {
+			"destination_array": {
+				"type": "Array"
+			}
+		},
 		"annotations": []
 	}
 }
